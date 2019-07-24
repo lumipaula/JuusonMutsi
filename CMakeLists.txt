@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(CMAKE_INSTALL_PREFIX "JuusonMutsi")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
+
+SET(CMAKE_INSTALL_PREFIX "JMutsi" CACHE PATH "Root folder for Juuson Mutsi" FORCE)
+
 
 project(JuusonMutsi)
 
@@ -13,12 +16,19 @@ endif()
 
 set(CMAKE_CXX_STANDARD 17)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/platform/win)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/sources/src/loader)
+
 
 file(GLOB SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/platform/win/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/sources/src/loader/*.cpp"
 )
 
+add_subdirectory(sources/libs/video)
+
 add_executable(JuusonMutsi ${SOURCES})
+
+
+
+target_link_libraries(JuusonMutsi PUBLIC Video)
 
 install(TARGETS JuusonMutsi RUNTIME DESTINATION bin/)
