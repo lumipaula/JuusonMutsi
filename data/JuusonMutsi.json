@@ -1,0 +1,8 @@
+{
+    "ID" : 0,
+    "Name" : "JM",
+    "Type" : "Boss",
+    "Intelligence" : 609,
+    "Model" : "explosion.png",
+    ".comment" : "parameters for entities"
+}

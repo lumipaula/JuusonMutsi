@@ -1,0 +1,45 @@
+Save file structure should be something like this
+
+Inventory data format
+4 bytes total size
+4 bytes Number of items
+list of item data
+
+Item data format
+4 bytes total size
+4 bytes item ID
+1 byte bool in use
+Modifiers etc etc
+
+
+Area data format
+
+
+
+Begin save data file
+
+0xEA7ADEADBEA57 Magic number
+4 bytes total size of save file
+
+
+Player data
+4 bytes total size
+4 bytes class ID
+4 bytes location ID
+4 bytes position X
+4 bytes position Y
+Inventory Data
+
+
+Permanent entity data
+4 bytes total size
+4 bytes entity base ID
+4 bytes location ID
+4 bytes position X
+4 bytes position Y
+Modifiers etc etc
+Inventory Data
+
+Area data
+4 bytes total size
+4 bytes number of areas

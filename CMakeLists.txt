@@ -24,6 +24,7 @@ file(GLOB SOURCES
 )
 
 add_subdirectory(sources/libs/video)
+add_subdirectory(sources/libs/game)
 
 add_executable(JuusonMutsi ${SOURCES})
 
