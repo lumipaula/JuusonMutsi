@@ -1,8 +1,21 @@
 #include <vector>
+#include <list>
 #include <future>
 #include <thread>
 #include "blockingconcurrentqueue.h"
 #include "task.h"
+#include <iostream>
+#include <utility>
+#include <atomic>
+
+#define QNAMED(var) #var, var
+
+
+
+
+
+
+class HThread;
 
 class HThread : public std::thread{
 private:
@@ -13,8 +26,9 @@ public:
 
 class ThreadPool{
 private:
-    std::vector<HThread> m_threads;
-    moodycamel::BlockingConcurrentQueue<TaskCookie> m_taskQueue;
+    bool m_running = false;
+    std::list<HThread> m_threads;
+    moodycamel::BlockingConcurrentQueue<void*> m_taskQueue;
 public:
     ThreadPool(size_t count);
     ~ThreadPool();
@@ -26,15 +40,28 @@ public:
 
     void workerMain();
 
+    HThread& getThread(int id);
+    HThread detachThread(int id);
+
+
 
     template<class F, class... Args>
-    auto enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
-        TaskCookie tc;
-        auto task = std::make_unique<Task>(std::forward(f),std::forward(args)...);
-        auto retVal = task->get_future();
-        tc.m_task = std::move(task);
-        m_taskQueue.enqueue(std::move(tc));
-        return retVal;
+    auto enqueue(F&& f, Args&&... args) -> TaskCookie<typename std::result_of<F(Args...)>::type> {
+        using rt = typename std::result_of<F(Args...)>::type;
+
+        std::cout << "pillu" << std::endl;
+
+
+
+        auto task = new Task<typename std::result_of<F(Args...)>::type(Args...)>(std::forward<F>(f),std::forward<Args>(args)...);
+    
+        //task->execute();
+
+        TaskCookie tc(task->get_future());
+
+
+        m_taskQueue.enqueue(std::move(task));
+        return std::move(tc);
     }
 
 

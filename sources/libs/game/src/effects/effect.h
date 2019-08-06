@@ -1,18 +1,24 @@
 #pragma once
 
-
+#include "jmlog.h"
 
 //
 
-class Effect{
-    virtual void apply();
+struct Effect{
+    virtual void apply(){
+
+    }
 };
 
-class Explosion : public Effect{
+struct Explosion : public Effect{
 
 };
 
-class Burn : public Effect{
+struct Burn : public Effect{
+
+};
+
+struct AttributeEffect : public Effect{
 
 };
 
