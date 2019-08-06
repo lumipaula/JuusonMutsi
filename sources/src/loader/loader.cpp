@@ -34,6 +34,14 @@ int test4(int b){
     return b;
 }
 
+std::string test5(){
+    return "Perseripuli";
+}
+
+std::string test6(std::string a,std::string b){
+    return a + b;
+}
+
 
 int main(void){
     //test();
@@ -42,18 +50,25 @@ int main(void){
 
     //std::cout << fuck.get(); 
 
-    
-
     ThreadPool tp(16);
-    tp.enqueue(test);
-    auto ret = tp.enqueue(test2);
-    auto ret2 = tp.enqueue(test3, 5.4f, 3.0f);
-    auto ret3 = tp.enqueue(test4,666);
+
+
+
+    auto ree = tp.enqueue(named(test));
+    auto ret = tp.enqueue(named(test2));
+    auto ret2 = tp.enqueue(named(test3), 5.4f, 3.0f);
+    auto ret3 = tp.enqueue(named(test4),666);
+    auto ret4 = tp.enqueue(test5);
+    auto ret5 = tp.enqueue(test6,"Vittu","jee");
     std::cout << ret.waitAndGet() << std::endl;
     std::cout << ret3.waitAndGet() << std::endl;
     std::cout << ret2.waitAndGet() << std::endl;
+    std::cout << ret4.waitAndGet() << std::endl;
+    std::cout << ret5.waitAndGet() << std::endl;
 
     
+
+    std::cout << "Finished aunus" << std::endl;
 
     //Display d;
 
