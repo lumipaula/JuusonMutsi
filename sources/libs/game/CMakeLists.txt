@@ -9,6 +9,7 @@ file(GLOB SOURCES
     "${source_path}/entities/*.cpp"
     "${source_path}/environment/*.cpp"
     "${source_path}/items/*.cpp"
+    "${source_path}/*.cpp"
 )
 
 add_library(Game SHARED ${SOURCES})
@@ -19,6 +20,7 @@ target_include_directories(Game PUBLIC
     "${source_path}/entities/"
     "${source_path}/environment/"
     "${source_path}/items/"
+    "${source_path}/"
 
 )
 

@@ -150,6 +150,17 @@ bool initSDL(){
 
 }
 
+void setVideoBuffer(std::unique_ptr<VideoBuffer> buffer){
+
+}
+
+void notifyRenderer(){
+
+}
+
+void renderLoop(){
+	
+}
 
 
 

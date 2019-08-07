@@ -25,7 +25,7 @@ file(GLOB SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/sources/src/loader/*.cpp"
 )
 
-#add_subdirectory(sources/libs/video)
+add_subdirectory(sources/libs/video)
 add_subdirectory(sources/libs/game)
 add_subdirectory(sources/libs/core)
 

@@ -6,6 +6,9 @@
 #include <list>
 #include "task.h"
 
+template<typename RT>
+class Task;
+
 using namespace std::chrono;
 
 using timeStampMicros = time_point<steady_clock,microseconds>;
@@ -26,6 +29,8 @@ private:
 public:
     void addTask(std::unique_ptr<Task<void()>> task);
 
+    void doTasks();
+
     void nextTurn();
 } gameTurn;
 
@@ -44,8 +49,8 @@ struct UnitOfTime{
 
 
 
-//Because for some reason months are stoopid and not logical
-struct Month : public UnitOfTime{
+//Because for some reason months are stoopid and not logical and don't have the same number of days
+struct Day : public UnitOfTime{
 
 
 

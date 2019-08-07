@@ -105,6 +105,13 @@ public:
         return std::move(std::get<0>(task));
     }
 
+    template<class F,class... Args>
+    auto enqueue(std::tuple<TaskCookie<typename std::result_of<F(Args...)>::type>,std::unique_ptr<Task<void()>>> cookietask)
+    -> TaskCookie<typename std::result_of<F(Args...)>::type> {
+        m_taskQueue.enqueue(std::move(std::get<1>(cookietask)));
+        return std::move(std::get<0>(cookietask));
+    }
+
 
 };
 

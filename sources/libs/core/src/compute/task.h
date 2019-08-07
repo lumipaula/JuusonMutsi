@@ -7,8 +7,19 @@
 #include <tuple>
 #include <string>
 
+
+
+
 template<typename RT>
 class Task;
+
+using taskptr = std::unique_ptr<Task<void()>>;
+
+
+struct TaskInfo{
+    std::string m_functionName;
+
+};
 
 template<class T>
 struct TaskCookie{
@@ -34,6 +45,8 @@ struct TaskCookie{
 
 
 
+
+
 };
 
 
@@ -41,17 +54,27 @@ template<typename RT>
 class Task : public std::packaged_task<RT>{
 friend std::ostream &operator <<(std::ostream &output, Task<void()> const& task);
 private:
+    int m_repeats;
     bool m_repeat;
     bool m_return;
     int m_returnId;
     std::string m_functionName;
+
+
+    //function for returning the Task pointer
+    bool m_callback;
+
+
 public:
+
+    std::function<void(std::unique_ptr<Task<void()>>)> m_callbackFun;
 
     template<class F, class... Args>
     Task(F&& f, Args&&... args)   :
         std::packaged_task<RT>(std::bind(std::forward<F>(f),std::forward<Args>(args)...)),
         m_repeat(false),
-        m_return(false)
+        m_return(false),
+        m_callback(false)
         {
     }
 
@@ -60,28 +83,53 @@ public:
         std::packaged_task<RT>(std::bind(std::forward<F>(f),std::forward<Args>(args)...)),
         m_functionName(name),
         m_repeat(false),
-        m_return(false)
+        m_return(false),
+        m_callback(false)
         {
     }
 
     bool execute(){
-        (*this)();
+        try{
+            (*this)();
+            return true;
+        }
+        catch(...){
+            return false;
+        }
     }
 
-    void setRepeat(bool rep){
+    void setRepeat(bool rep, int times){
         m_repeat = rep;
+        m_repeats = times;
     }
 
     void setReturn(bool ret, int id){
         m_return = ret;
     }
 
+    void setCallback(bool callback){
+        m_callback = callback;
+    }
+
+    void setCallbackFun(std::function<void(std::unique_ptr<Task<void()>>)> fun){
+        m_callbackFun = std::move(fun);
+    }
+
     bool returnable(){
         return m_return;
     }
     bool repeatable(){
-        return m_repeat;
+        if(m_repeat && m_repeats > 0){
+            m_repeats--;
+            return true;
+        }
+        return false;
     }
+
+    bool callback(){
+        return m_callback;
+    }
+
 
 
 

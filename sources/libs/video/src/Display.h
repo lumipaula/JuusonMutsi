@@ -12,8 +12,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "ivideo.h"
 
-class Display{
+
+class Display : public IVideo{
 private:
 
 	//Clean me
@@ -46,6 +48,10 @@ public:
 	void refresh();
 	void drawText(uint32_t startY, uint32_t startX, const char *text);
 	void quit();
+
+	void setVideoBuffer(std::unique_ptr<VideoBuffer> buffer) override;
+    void notifyRenderer() override;
+    void renderLoop() override;
 
 };
 

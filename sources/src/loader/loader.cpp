@@ -9,15 +9,17 @@
 
 */
 #include "workers.h"
-
+#include "task.h"
 
 //Audio, video, input, etc 
 
-
+std::unique_ptr<Task<void()>> callbackTest;
 
 
 void test(){
-    std::cout << "Hello jöysäs mutsi sdl" << std::endl;
+    static int asd = 0;
+    asd++;
+    std::cout << "This is a test " << asd << std::endl;
 }
 
 int test2(){
@@ -31,6 +33,7 @@ float test3(float a, float b){
 }
 
 int test4(int b){
+    std::cout << "This is a test " << b << std::endl;
     return b;
 }
 
@@ -54,21 +57,40 @@ int main(void){
 
 
 
-    auto ree = tp.enqueue(named(test));
-    auto ret = tp.enqueue(named(test2));
-    auto ret2 = tp.enqueue(named(test3), 5.4f, 3.0f);
-    auto ret3 = tp.enqueue(named(test4),666);
-    auto ret4 = tp.enqueue(test5);
-    auto ret5 = tp.enqueue(test6,"Vittu","jee");
-    std::cout << ret.waitAndGet() << std::endl;
-    std::cout << ret3.waitAndGet() << std::endl;
-    std::cout << ret2.waitAndGet() << std::endl;
-    std::cout << ret4.waitAndGet() << std::endl;
-    std::cout << ret5.waitAndGet() << std::endl;
+
+    auto t = createTask(test);
+
+    auto task = std::move(std::get<1>(t));
+
+    task->setCallback(true);
+    task->setCallbackFun([](std::unique_ptr<Task<void()>> task){
+        callbackTest = std::move(task);
+    });
+
+    task->execute();
+    task->reset();
+    task->m_callbackFun(std::move(task));
+
+    callbackTest->execute();
+
+    std::list<taskptr> tasklist;
+
+    for(int i=0;i<5;i++){
+        tasklist.emplace_back(std::move(std::get<1>(createTask(test4,i))));
+        tasklist.back()->setCallback(true);
+        tasklist.back()->setCallbackFun([&tasklist](taskptr tusk){
+            tasklist.push_back(std::move(tusk));
+        });
+    }
+
+    tp.enqueueList(tasklist);
+    //cookie.wait();
+
+    //tp.enqueueList(tasklist);
+
 
     
 
-    std::cout << "Finished aunus" << std::endl;
 
     //Display d;
 

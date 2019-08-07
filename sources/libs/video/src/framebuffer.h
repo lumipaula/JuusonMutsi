@@ -1,14 +1,19 @@
 #pragma once
 
 #include <stdint.h>
+#include "texture.h"
+
 
 struct Framebuffer{
-    uint32_t *data;
-    uint32_t width,height;
+    unsigned int *data;
+    int width,height;
 
-    Framebuffer(uint32_t width_,uint32_t height_);
-    void setPixel(uint32_t x,uint32_t y,uint32_t color);
-    uint32_t getPixel(uint32_t x,uint32_t y){
+    Framebuffer(int width_,int height_);
+    void setPixel(int x,int y,unsigned int color);
+    int getPixel(int x,int y){
         return data[y*width+x];
     }
+
+    void drawTexture(const Texture &tex, int x, int y);
+
 };

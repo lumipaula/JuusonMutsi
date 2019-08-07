@@ -71,8 +71,13 @@ void ThreadPool::workerMain(){
     while(m_running){
         std::unique_ptr<Task<void()>> task;
         m_taskQueue.wait_dequeue(task);
-        std::cout << (*task) << std::endl;
         task->execute();
+        if(task->callback()){
+            task->reset();
+            task->m_callbackFun(std::move(task));
+            continue;
+        }
+
         if(task->returnable()){
             returnTask(std::move(task));
             continue;
@@ -105,12 +110,14 @@ void ThreadPool::enqueue(std::unique_ptr<Task<void()>> task){
     m_taskQueue.enqueue(std::move(task));
 }
 
-void ThreadPool::enqueueList(std::list<std::unique_ptr<Task<void()>>> &tasks){
-    auto it = tasks.begin();
-    std::vector<TaskCookie<void>> cookies;
-    while(*it){
-        (*it)->setReturn(true,609);
-        enqueue(std::move(*it));
-        it++;
+void ThreadPool::enqueueList(std::list<taskptr> &tasks){
+    //Moving to another container to avoid cycling back
+    std::vector<taskptr> taasks;
+    while(!tasks.empty()){
+        taasks.push_back(std::move(tasks.front()));
+        tasks.pop_front();
+    }
+    for(auto &task : taasks){
+        enqueue(std::move(task));
     }
 }
