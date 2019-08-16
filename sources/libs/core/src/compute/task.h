@@ -6,6 +6,8 @@
 #include <iostream>
 #include <tuple>
 #include <string>
+#include "workers.h"
+
 
 
 
@@ -13,7 +15,11 @@
 template<typename RT>
 class Task;
 
+class ThreadPool;
+
 using taskptr = std::unique_ptr<Task<void()>>;
+
+
 
 
 struct TaskInfo{
@@ -49,6 +55,34 @@ struct TaskCookie{
 
 };
 
+template<class T>
+struct TaskWrapper{
+    TaskCookie<T> m_cookie;
+    taskptr m_task;
+
+    ThreadPool *m_pool;
+
+    TaskWrapper(TaskCookie<T> cookie, taskptr task) :
+        m_cookie(std::move(cookie)),
+        m_task(std::move(task)){
+        
+    }
+
+    TaskWrapper(TaskCookie<T> cookie, taskptr task, ThreadPool *pool) :
+        m_cookie(std::move(cookie)),
+        m_task(std::move(task)),
+        m_pool(pool){
+        
+    }
+
+    void setPool(ThreadPool *pool){
+        m_pool = pool;
+    }
+
+
+
+};
+
 
 template<typename RT>
 class Task : public std::packaged_task<RT>{
@@ -67,7 +101,7 @@ private:
 
 public:
 
-    std::function<void(std::unique_ptr<Task<void()>>)> m_callbackFun;
+    std::function<void(taskptr)> m_callbackFun;
 
     template<class F, class... Args>
     Task(F&& f, Args&&... args)   :
@@ -111,7 +145,7 @@ public:
         m_callback = callback;
     }
 
-    void setCallbackFun(std::function<void(std::unique_ptr<Task<void()>>)> fun){
+    void setCallbackFun(std::function<void(taskptr)> fun){
         m_callbackFun = std::move(fun);
     }
 
@@ -137,36 +171,38 @@ public:
 
 
 
-
 template<class F,class... Args>
-auto createTask(F&& f, Args&&... args) 
-    -> std::tuple<TaskCookie<typename std::result_of<F(Args...)>::type>,std::unique_ptr<Task<void()>>> {
+auto createTaskNameless(F&& f, Args&&... args) 
+    -> TaskWrapper<typename std::result_of<F(Args...)>::type>{
     using rt = typename std::result_of<F(Args...)>::type;
-
+    std::cout << f << std::endl;
     auto task = new Task<rt(Args...)>(std::forward<F>(f),std::forward<Args>(args)...);
 
     TaskCookie tc(task->get_future());
 
-    std::unique_ptr<Task<void()>> realTask = std::unique_ptr<Task<void()>>(reinterpret_cast<Task<void()>*>(task));
+    taskptr realTask = taskptr(reinterpret_cast<Task<void()>*>(task));
 
-    return std::make_tuple(std::move(tc),std::move(realTask));
+    return TaskWrapper(std::move(tc),std::move(realTask));
 
 
 }
 
 template<class F,class... Args>
-auto createTaskn(std::string name, F&& f, Args&&... args) 
-    -> std::tuple<TaskCookie<typename std::result_of<F(Args...)>::type>,std::unique_ptr<Task<void()>>> {
+auto createTaskNamed(std::string name, F&& f, Args&&... args) 
+    -> TaskWrapper<typename std::result_of<F(Args...)>::type>{
+    // std::tuple<TaskCookie<typename std::result_of<F(Args...)>::type>,taskptr> {
     using rt = typename std::result_of<F(Args...)>::type;
-
     auto task = new Task<rt(Args...)>(name,std::forward<F>(f),std::forward<Args>(args)...);
 
     TaskCookie tc(task->get_future());
 
-    std::unique_ptr<Task<void()>> realTask = std::unique_ptr<Task<void()>>(reinterpret_cast<Task<void()>*>(task));
+    taskptr realTask = taskptr(reinterpret_cast<Task<void()>*>(task));
 
-    return std::make_tuple(std::move(tc),std::move(realTask));
+    return TaskWrapper(std::move(tc),std::move(realTask));
 
 
 }
 
+#define EXT_FUNC_NAME_STR_(N, ...) #N
+#define EXT_FUNC_NAME_STR(args) EXT_FUNC_NAME_STR_ args
+#define createTask(...) createTaskNamed(EXT_FUNC_NAME_STR((__VA_ARGS__)),__VA_ARGS__)

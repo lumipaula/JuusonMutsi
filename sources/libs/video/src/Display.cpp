@@ -142,6 +142,19 @@ drawText(uint32_t startY, uint32_t startX, const char *text){
 
 }
 
+void Display::setVideoBuffer(std::unique_ptr<VideoBuffer> buffer){
+
+}
+
+void Display::notifyRenderer(){
+
+}
+
+void Display::renderLoop(){
+	
+}
+
+
 
 
 bool initSDL(){
@@ -150,17 +163,6 @@ bool initSDL(){
 
 }
 
-void setVideoBuffer(std::unique_ptr<VideoBuffer> buffer){
-
-}
-
-void notifyRenderer(){
-
-}
-
-void renderLoop(){
-	
-}
 
 
 

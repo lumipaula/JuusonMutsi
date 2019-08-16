@@ -8,6 +8,7 @@ find_package (Threads)
 file(GLOB SOURCES 
     "${source_path}/compute/*.cpp"
     "${source_path}/util/*.cpp"
+    "${source_path}/interface/*.cpp"
 
 )
 
@@ -16,6 +17,7 @@ add_library(Core SHARED ${SOURCES})
 target_include_directories(Core PUBLIC 
     "${source_path}/compute/"
     "${source_path}/util/"
+    "${source_path}/interface/"
 
 
 )

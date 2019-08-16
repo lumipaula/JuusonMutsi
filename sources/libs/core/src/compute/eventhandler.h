@@ -33,11 +33,11 @@ public:
     EventHandler();
     ~EventHandler();
 
-    void addEvent(Task<void()>, int millis);
-    void addEvent(Task<void()>, int millis, bool recurring, int epoch);
+    void addEvent(Task<void()> task, int millis);
+    void addEvent(Task<void()> task, int millis, bool recurring, int epoch);
 
-    void addEvent(Task<void()>, timeStampMillis millis);
-    void addEvent(Task<void()>, timeStampMillis millis, bool recurring, int epoch);
+    void addEvent(Task<void()> task, timeStampMillis millis);
+    void addEvent(Task<void()> task, timeStampMillis millis, bool recurring, int epoch);
 
     void stopRecurringEvent(int id);
 

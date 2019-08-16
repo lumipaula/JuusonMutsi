@@ -16,7 +16,7 @@ add_library(Video SHARED ${SOURCES})
 
 target_include_directories(Video PUBLIC ${include_path})
 
-target_link_libraries(Video ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY})
+target_link_libraries(Video ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARY} Core)
 
 if(UNIX)
 install(TARGETS Video LIBRARY DESTINATION bin/ COMPONENT Runtime)

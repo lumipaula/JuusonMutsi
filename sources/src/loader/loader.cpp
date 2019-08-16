@@ -52,7 +52,7 @@ int main(void){
     //auto fuck = createTask(test);
 
     //std::cout << fuck.get(); 
-
+    /* 
     ThreadPool tp(16);
 
 
@@ -82,8 +82,9 @@ int main(void){
             tasklist.push_back(std::move(tusk));
         });
     }
-
+    
     tp.enqueueList(tasklist);
+    */
     //cookie.wait();
 
     //tp.enqueueList(tasklist);
